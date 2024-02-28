@@ -13,4 +13,6 @@ Capstone Code: Organic Waste Processing Device
 - Adafruit_SH110X
 - Adafruit_Unified_sensor
 - Adafruit_GFX_Library
-- 
+- Adafruit_HTU21DF_Library
+- Adafruit_SGP30_Sensor
+- New-LiquidCrystal-master - https://github.com/fmalpartida/New-LiquidCrystal (Select the Code button and download zip)
