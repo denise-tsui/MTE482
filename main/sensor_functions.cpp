@@ -8,16 +8,17 @@
  */
 
 #include "Arduino.h"
+#include <Servo.h>
 #include "Wire.h"
 #include "Adafruit_MCP9808.h"
 
-// define connections and objects
+/** CONNECTIONS AND OBJECT DEFINITION   **/
 const int HEAT_PIN = 10;
 const int SERVO_PIN = 8;
 // const int HUMID_PIN = 9;
 // const int IAQ_PIN = 9;
 // const int LCD_PIN = 9;
-
+Servo servo;
 Adafruit_MCP9808 temp = Adafruit_MCP9808();
 
 
