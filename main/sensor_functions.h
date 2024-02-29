@@ -13,19 +13,18 @@
 // setup serial communication and join i2c bus
 void setup_serial_i2c();
 
-// setup PTC heating
-void setup_PTC();
-
 // setup MCP9808 sensor
 void setup_Temp();
-
-// read MCP9808 temp
 float read_Temp();
 
-// set PTC to high 
-void heatOn();
+// setup PTC heating
+void setup_PTC();
+void heatOn();  // set PTC to high 
+void heatOff(); // set PTC to low
 
-// set PTC to low 
-void heatOff();
+// setup locking servo
+void setup_Lock();
+void Lock();
+void Unlock();
 
 #endif
