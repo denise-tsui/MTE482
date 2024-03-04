@@ -6,7 +6,7 @@ void setup() {
   // pin numbers for devices?
   // addresses?
   initializeSensors();
-}
+}\
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -20,7 +20,12 @@ void loop() {
   float tmp = readTemp();
   message = "Temp: " + String(tmp);
   printLcd(message);
-  delay(50000);
+  delay(5000);
+
+  float air = readAir();
+  message = "TVOC: " + String(air) + " ppm";
+  printLcd(message);
+  delay(5000);
   
   
 }

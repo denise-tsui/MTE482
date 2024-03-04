@@ -42,7 +42,11 @@ float readHumidity(){
 }
 
 float readAir(){
-
+  if (! sgp.IAQmeasure()) {
+    Serial.println("Measurement failed");
+    return 0;
+  }
+  return sgp.TVOC;
 }
 
 float readTemp(){
