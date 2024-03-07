@@ -14,12 +14,13 @@ bool START = 0;
 void setup() {
   initializeSensors();
   initializeButtons();
-  setupServo();
+  setupServos();
+  attachInterrupt(digitalPinToInterrupt(BUTTON_STOP), estop, CHANGE);
 }
 
 void loop() {  
   printLcd("Starting Test");
-  delay(5000);
+  delay(2000);
 
   if (IDLE == 1) {
     while (!buttonPressed(BUTTON_START)){}
@@ -41,7 +42,7 @@ void loop() {
   }
 
   if (PREHEAT == 1) {
-    delay(15000);  // delay 15s before start
+    delay(8000);  // delay 8s before start
     heatOn();
     printLcd("begin heating");
 
@@ -52,7 +53,7 @@ void loop() {
       //   AT_TEMP = 1;
       // }
       printHumidity(readHumidity());
-      delay(30000);    // check temp frequency
+      delay(10000);    // check temp frequency (10s)
       AT_TEMP = 1;
       printLcd("reached temp");
     }
@@ -61,12 +62,31 @@ void loop() {
   if (AT_TEMP == 1) {
     // 1. hold at temp for set timed duration
     // 2. AT_TEMP = 0; COOLING = 1;
+    unsigned long StartTime = millis();
+    unsigned long elapsed = 0;
+    unsigned long CurrentTime = 0;
+
     double minute = 1;
     double ms_in_min = 60000;
     double delay_duration = minute * ms_in_min;
-    delay(delay_duration);
+    // delay(delay_duration);
+    
+    // while (elapsed < delay_duration) {
+      Blend(5); // blend for 5 seconds
+      delay(5000);
+      Blend(5); // blend for 5 seconds
+      delay(5000);
+      Blend(5); // blend for 5 seconds
+      delay(5000);
+      Blend(5); // blend for 5 seconds
+      delay(5000);
+      // CurrentTime = millis();
+      // elapsed = CurrentTime - StartTime;
+    // }
+
     printLcd("done heat");
     heatOff();
+    delay(500);
     AT_TEMP = 0;
     COOLING = 1;
   }
@@ -110,3 +130,5 @@ void loop() {
     } 
   }
 }
+
+

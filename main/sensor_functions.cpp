@@ -24,9 +24,13 @@ const int LED_START = 8;
 const int LED_IDLE = 9;
 const int LED_STOP = 10;
 const int BUTTON_START = 7;
-const int BUTTON_STOP = 11;
+const int BUTTON_STOP = 2;
+const int BLEND_PIN = 12;
+// bool IDLE = 1;
+// bool AT_TEMP = 0;
 
-Servo servo;
+Servo servo_lock;
+Servo servo_blend;
 Adafruit_SGP30 sgp;
 Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 Adafruit_MCP9808 tempsensor = Adafruit_MCP9808();
@@ -135,24 +139,33 @@ void heatOff(){
   pinMode(HEAT_PIN, LOW);
 }
 
-/**  LOCKING SERVO FUNCTIONS  **/
-void setupServo(){
-  servo.attach(SERVO_PIN);
-  servo.write(45);
+/**  SERVO FUNCTIONS  **/
+void setupServos(){
+  servo_lock.attach(SERVO_PIN);
+  servo_lock.write(45);
   // Serial.println("Initialize Servo in Unlocked Position");
   // delay(15);
+  servo_blend.attach(BLEND_PIN);
+  servo_blend.write(90);    // blending servo is stationary
 }
 
 void Lock(){
   // Serial.println("Locking..");
   delay(15);
-  servo.write(135);
+  servo_lock.write(135);
 }
 
 void Unlock(){
   // Serial.println("Unlocking... return to home position");
-  servo.write(45);
+  servo_lock.write(45);
 }
+
+void Blend(int seconds){
+  servo_blend.write(135);
+  delay(seconds*1000);
+  servo_blend.write(90);
+}
+
 
 bool buttonPressed(int buttonPin){
   int reading = digitalRead(buttonPin);
@@ -181,4 +194,8 @@ bool buttonPressed(int buttonPin){
   return 0;
 }
 
-
+void estop(){
+   digitalWrite(LED_STOP, 1);
+   digitalWrite(LED_START, 0);
+   servo_blend.write(90);
+}

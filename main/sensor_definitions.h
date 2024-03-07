@@ -15,6 +15,8 @@ extern const int LED_IDLE;
 extern const int LED_STOP;
 extern const int BUTTON_START;
 extern const int BUTTON_STOP;
+extern bool IDLE;
+extern bool AT_TEMP;
 
 // initialization
 void initializeSensors();
@@ -35,11 +37,14 @@ void printHumidity(float hmd);
 void heatOn();  // set PTC to high 
 void heatOff(); // set PTC to low
 
-// servo
-void setupServo();
+// servo (lock + blend)
+void setupServos();
 void Lock();
 void Unlock();
+void Blend(int seconds);
+void estop();
 
 bool buttonPressed(int buttonPin);
+
 
 #endif
