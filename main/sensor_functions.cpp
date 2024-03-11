@@ -21,9 +21,9 @@
 const int HEAT_PIN = 5;
 const int SERVO_PIN = 6;
 const int LED_START = 8;
-const int LED_IDLE = 9;
-const int LED_STOP = 10;
-const int BUTTON_START = 7;
+const int LED_STOP = 9;
+const int LED_IDLE = 10;
+const int BUTTON_START = 3;
 const int BUTTON_STOP = 2;
 const int BLEND_PIN = 12;
 // bool IDLE = 1;
