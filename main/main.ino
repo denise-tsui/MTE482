@@ -15,7 +15,7 @@ void setup() {
   initializeSensors();
   initializeButtons();
   setupServos();
-  attachInterrupt(digitalPinToInterrupt(BUTTON_STOP), estop, CHANGE);
+  // attachInterrupt(digitalPinToInterrupt(BUTTON_STOP), estop, CHANGE);
 }
 
 void loop() {  
@@ -95,7 +95,7 @@ void loop() {
     printLcd("begin cool");
     // 1. temp is at safe temp < 35
     // 2. COOLING = 0; CYCLE_FINISHED = 1;
-    delay(150000);  // wait n minutes until beginning to check temp sensor read
+    delay(30000);  // wait n minutes until beginning to check temp sensor read
     while (CYCLE_FINISHED != 1) {
       double temp = readTemp();
       // if (temp > 60) {
@@ -130,5 +130,3 @@ void loop() {
     } 
   }
 }
-
-

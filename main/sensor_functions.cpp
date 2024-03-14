@@ -18,11 +18,11 @@
 
 
 /** CONNECTION PINS AND OBJECT DEFINITION   **/
-const int HEAT_PIN = 5;
+const int HEAT_PIN = 11;
 const int SERVO_PIN = 6;
-const int LED_START = 8;
+const int LED_IDLE = 8;
 const int LED_STOP = 9;
-const int LED_IDLE = 10;
+const int LED_START = 10;
 const int BUTTON_START = 3;
 const int BUTTON_STOP = 2;
 const int BLEND_PIN = 12;
@@ -77,6 +77,7 @@ void initializeButtons(){
   pinMode(LED_START, OUTPUT);
   pinMode(LED_STOP, OUTPUT);
   pinMode(LED_IDLE, OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_STOP), estop, CHANGE);
 
   digitalWrite(LED_IDLE, 1); // idle led indicates device is on and not running
   digitalWrite(LED_START, 0);
@@ -95,7 +96,13 @@ float readHumidity(){
 float readAir(){
   if (! sgp.IAQmeasure()) {
     Serial.println("Measurement failed");
-    return 0;
+    return -1;
+  }
+  // first 10-20 reading will be TVOC: 0 since the sensor is warming up
+  int counter = 0;
+  while (counter < 30){
+    float air = sgp.TVOC;
+    counter++;
   }
   return sgp.TVOC;
 }
@@ -197,5 +204,7 @@ bool buttonPressed(int buttonPin){
 void estop(){
    digitalWrite(LED_STOP, 1);
    digitalWrite(LED_START, 0);
+   lcd.clear();
+   lcd.print("estop triggered");
    servo_blend.write(90);
 }
