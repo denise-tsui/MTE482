@@ -135,6 +135,7 @@ void loop() {
     delay(5000);
     printLcd("quality summary:");
     printAir(readAir());
+    
     delay(3000);
     printHumidity(readHumidity());
     delay(3000);
