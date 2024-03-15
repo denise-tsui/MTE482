@@ -15,6 +15,7 @@ extern const int LED_IDLE;
 extern const int LED_STOP;
 extern const int BUTTON_START;
 extern const int BUTTON_STOP;
+extern volatile bool INTERRUPT;
 extern bool IDLE;
 extern bool AT_TEMP;
 
@@ -32,6 +33,7 @@ void printLcd(String message);
 void printAir(float air);
 void printTemp(float temp);
 void printHumidity(float hmd);
+void printTempTime(float temp, float humd, double elapsed);
 
 // PTC heating
 void heatOn();  // set PTC to high 

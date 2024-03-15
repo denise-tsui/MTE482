@@ -26,6 +26,7 @@ const int LED_START = 10;
 const int BUTTON_START = 3;
 const int BUTTON_STOP = 2;
 const int BLEND_PIN = 12;
+volatile bool INTERRUPT = 0;
 // bool IDLE = 1;
 // bool AT_TEMP = 0;
 
@@ -98,13 +99,22 @@ float readAir(){
     Serial.println("Measurement failed");
     return -1;
   }
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Reading air");
+  lcd.setCursor(0, 1); // bottom left
+  lcd.print("quality value...");
+  
   // first 10-20 reading will be TVOC: 0 since the sensor is warming up
   int counter = 0;
-  while (counter < 30){
-    float air = sgp.TVOC;
+  float air = 0;
+  while (counter < 50 && INTERRUPT == 0){
+    air = sgp.TVOC;
+    Serial.print("TVOC "); Serial.print(air); Serial.print(" ppb\t");
+    delay(1000);
     counter++;
   }
-  return sgp.TVOC;
+  return air;
 }
 
 float readTemp(){
@@ -116,7 +126,7 @@ float readTemp(){
 
 /**  PRINT MSG FUNCTIONS  **/
 void printAir(float air){
-  String message = "TVOC: " + String(air) + " ppm";
+  String message = "TVOC: " + String(air) + " ppb";
   printLcd(message);
 }
 
@@ -132,7 +142,16 @@ void printHumidity(float hmd){
 
 void printLcd(String message){
   lcd.clear();
+  lcd.setCursor(0, 0);
   lcd.print(message);
+}
+
+void printTempTime(float temp, float humd, double elapsed){
+ lcd.clear();
+ lcd.setCursor(0, 0);
+ lcd.print("T:" + String(temp) + " H:" + String(humd));
+ lcd.setCursor(0, 1);
+ lcd.print("Time: " + String(elapsed/60000));
 }
 
 /**  PTC HEATING FUNCTIONS  **/
@@ -149,7 +168,7 @@ void heatOff(){
 /**  SERVO FUNCTIONS  **/
 void setupServos(){
   servo_lock.attach(SERVO_PIN);
-  servo_lock.write(45);
+  servo_lock.write(180);
   // Serial.println("Initialize Servo in Unlocked Position");
   // delay(15);
   servo_blend.attach(BLEND_PIN);
@@ -157,14 +176,14 @@ void setupServos(){
 }
 
 void Lock(){
-  // Serial.println("Locking..");
+  Serial.println("Locking..");
   delay(15);
-  servo_lock.write(135);
+  servo_lock.write(180-75);
 }
 
 void Unlock(){
   // Serial.println("Unlocking... return to home position");
-  servo_lock.write(45);
+  servo_lock.write(180);
 }
 
 void Blend(int seconds){
@@ -204,7 +223,11 @@ bool buttonPressed(int buttonPin){
 void estop(){
    digitalWrite(LED_STOP, 1);
    digitalWrite(LED_START, 0);
-   lcd.clear();
-   lcd.print("estop triggered");
+   digitalWrite(LED_IDLE, 0);
+   INTERRUPT = 1;
+//   lcd.clear();
+//   lcd.print("estop triggered");
+   servo_lock.write(0);
    servo_blend.write(90);
+   heatOff();
 }
