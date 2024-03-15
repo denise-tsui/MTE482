@@ -107,14 +107,26 @@ float readAir(){
   
   // first 10-20 reading will be TVOC: 0 since the sensor is warming up
   int counter = 0;
+  float non_zero_air = 0;
   float air = 0;
-  while (counter < 50 && INTERRUPT == 0){
+  float tolerance = 0.1;
+  while (counter < 25 && INTERRUPT == 0){
+    if (! sgp.IAQmeasure()) {
+      Serial.println("Measurement failed");
+      continue;
+    }
     air = sgp.TVOC;
-    Serial.print("TVOC "); Serial.print(air); Serial.print(" ppb\t");
-    delay(1000);
+    // Serial.print("TVOC "); Serial.print(sgp.TVOC); Serial.print(" ppb\t");
+    Serial.print("TVOC "); Serial.print(air); Serial.println(" ppb\t");
+    // 0 to 400 ppb is acceptabl
+    // Serial.print("Counter: "); Serial.println(counter);
+    delay(500);
     counter++;
+    if (air != 0) {
+      non_zero_air = air;
+    }
   }
-  return air;
+  return max(non_zero_air, air);
 }
 
 float readTemp(){
@@ -151,7 +163,7 @@ void printTempTime(float temp, float humd, double elapsed){
  lcd.setCursor(0, 0);
  lcd.print("T:" + String(temp) + " H:" + String(humd));
  lcd.setCursor(0, 1);
- lcd.print("Time: " + String(elapsed/60000));
+ lcd.print("Time: " + String(elapsed/60000) + " mins");
 }
 
 /**  PTC HEATING FUNCTIONS  **/
@@ -227,7 +239,7 @@ void estop(){
    INTERRUPT = 1;
 //   lcd.clear();
 //   lcd.print("estop triggered");
-   servo_lock.write(0);
+   servo_lock.write(180);
    servo_blend.write(90);
    heatOff();
 }

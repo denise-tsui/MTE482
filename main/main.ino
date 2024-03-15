@@ -76,7 +76,7 @@ void loop() {
     unsigned long elapsed = 0;
     unsigned long CurrentTime = 0;
 
-    double minute = 45;
+    double minute = 80;
     double ms_in_min = 60000;
     double delay_duration = minute * ms_in_min;
     // delay(delay_duration);
@@ -102,21 +102,22 @@ void loop() {
   }
 
   if (COOLING == 1 && INTERRUPT == 0) {
-    printLcd("Now cooling~!");
+    printLcd("Now cooling!");
     // 1. temp is at safe temp < 35
     // 2. COOLING = 0; CYCLE_FINISHED = 1;
-    delay(30000);  // wait n minutes until beginning to check temp sensor read
+    delay(1000);  // wait n minutes until beginning to check temp sensor read
     while (CYCLE_FINISHED != 1 && INTERRUPT == 0) {
       float temp = readTemp();
       printTemp(temp);
-      if (temp > 60) {
-        delay(30000);   // wait 30s until next check
+//      delay(30000);   // wait 30s until next check
+      if (temp > 45.00) {
+        delay(10000);   // wait 30s until next check
         // (reduce check time from every 10 minutes -> 5 minutes -> 30 seconds -> 5 seconds)
        }
-      else if (temp > 35) {
-        delay(10000);
+      else if (45.00 > temp && temp > 35.00) {
+        delay(5000);
       }
-      else if (temp < 35) { 
+      else if (temp < 35.00) { 
         COOLING = 0; 
         CYCLE_FINISHED = 1; 
       }
@@ -124,24 +125,23 @@ void loop() {
   }
 
   if (CYCLE_FINISHED == 1 && INTERRUPT == 0) {
-    while(!buttonPressed(BUTTON_STOP)) {
-      printLcd("cycle finished");
-      delay(10000);
-      printLcd("quality summary:");
-      printAir(readAir());
-      delay(5000);
-      printHumidity(readHumidity());
-      delay(5000);
+    printLcd("cycle finished");
+    delay(10000);
+    printLcd("quality summary:");
+    printAir(readAir());
+    delay(5000);
+    printHumidity(readHumidity());
+    delay(5000);
 
-      
-      // 1. print lcd about cycle finished etc.
-      // 2. turn off after 2 minutes
-      // 3. locking servo unlocks lid
-      Unlock();
-      delay(5000);
-      printLcd("please open lid");
-      IDLE = 1;
-    } 
+    
+    // 1. print lcd about cycle finished etc.
+    // 2. turn off after 2 minutes
+    // 3. locking servo unlocks lid
+    Unlock();
+    delay(5000);
+    printLcd("please open lid");
+    CYCLE_FINISHED = 0;
+    IDLE = 1;
   }
 
 //  if (INTERRUPT == 1){
