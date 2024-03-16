@@ -161,11 +161,50 @@ void printLcd(String message){
 }
 
 void printTempTime(float temp, float humd, double elapsed){
- lcd.clear();
- lcd.setCursor(0, 0);
- lcd.print("T:" + String(temp) + " H:" + String(humd));
- lcd.setCursor(0, 1);
- lcd.print("Time(min): " + String(elapsed/60000));
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Temp (C): " + String(temp));
+  lcd.setCursor(0, 1);
+  
+//  int total_seconds = int(elapsed) / 1000;
+//  
+//  int minutes = total_seconds / 60;
+//  int seconds = total_seconds % 60;
+//  
+//  int hours = total_seconds / 3600;
+//  minutes = minutes % 60;
+
+    long totalSeconds = long(elapsed) / 1000;
+
+    // Calculate hours, minutes, and remaining seconds
+    int hours = totalSeconds / 3600;
+    int remainingSeconds = totalSeconds % 3600;
+    int minutes = remainingSeconds / 60;
+    int seconds = remainingSeconds % 60;
+
+//    char timeString[9]; // Assuming the string "hh:mm:ss" with null terminator
+//
+//    // Format hours with leading zero if necessary
+//    if (hours < 10)
+//        sprintf(timeString, "0%d", hours);
+//    else
+//        sprintf(timeString, "%d", hours);
+//
+//    strcat(timeString, ":");
+//
+//    // Format minutes with leading zero if necessary
+//    if (minutes < 10)
+//        strcat(timeString, "0");
+//    sprintf(timeString + strlen(timeString), "%d", minutes);
+//
+//    strcat(timeString, ":");
+//
+//    // Format seconds with leading zero if necessary
+//    if (seconds < 10)
+//        strcat(timeString, "0");
+        
+  lcd.print("Time: " + String(hours) + ":" + String(minutes) + ":" + String(seconds));
+//    lcd.print("Time: " + String(timeString));
 }
 
 /**  PTC HEATING FUNCTIONS  **/
@@ -241,7 +280,7 @@ void estop(){
    INTERRUPT = 1;
 //   lcd.clear();
 //   lcd.print("estop triggered");
-   servo_lock.write(0);
+   servo_lock.write(180);
    servo_blend.write(90);
    heatOff();
 }

@@ -4,11 +4,11 @@
 #include <Servo.h>
 #include "sensor_definitions.h"
 
-bool IDLE = 0;      // waiting for input
+bool IDLE = 1;      // waiting for input
 bool PREHEAT = 0;   // lid closed, preheating has begun
 bool AT_TEMP = 0;   // temperature sensor shows @ max temp, start timer
 bool COOLING = 0;   // when timer finished, allow x minutes to cool
-bool CYCLE_FINISHED = 1;
+bool CYCLE_FINISHED = 0;
 bool START = 0;
 
 void setup() {
@@ -25,7 +25,7 @@ void loop() {
     delay(10000);
   }
   
-  printLcd("Starting Demo!");
+  printLcd("In IDLE state...");
   delay(2000);
 
   if (IDLE == 1 && INTERRUPT == 0) {
@@ -45,6 +45,7 @@ void loop() {
     Lock();
     IDLE = 0; 
     PREHEAT = 1;
+    printTemp(readTemp());
   }
   
   if (PREHEAT == 1 && INTERRUPT == 0) {
@@ -53,19 +54,17 @@ void loop() {
     heatOn();
 
     while (AT_TEMP != 1 && INTERRUPT == 0) {
-      // double temp = readTemp();
-      // if (temp > 140) {
-      //   PREHEAT = 0;
-      //   AT_TEMP = 1;
-      // }
-      // printHumidity(readHumidity());
-      //delay(3000);
-      //printAir(readAir());
+//       double temp = readTemp();
+//       printHumidity(readHumidity());
+//      delay(3000);
+//      printAir(readAir());
       delay(10000);    // check temp frequency (10s)
-      AT_TEMP = 1;
-      printLcd("reached temp");
+      printLcd("Reached temp");
       delay(4000);
+
       printTemp(readTemp());
+      PREHEAT = 0;
+      AT_TEMP = 1;
     }
   }
 
@@ -76,7 +75,7 @@ void loop() {
     unsigned long elapsed = 0;
     unsigned long CurrentTime = 0;
 
-    double minute = 3;
+    double minute = 2;
     double ms_in_min = 60000;
     double delay_duration = minute * ms_in_min;
     // delay(delay_duration);
@@ -124,7 +123,7 @@ void loop() {
         temp = readTemp();
         printTemp(temp);
         delay(5000);  // wait 5s until cycle finished
-        
+        COOLING = 0;
         CYCLE_FINISHED = 1;
       }
     }
@@ -147,8 +146,9 @@ void loop() {
     Unlock();
     delay(5000);
     printLcd("please open lid");
-    // CYCLE_FINISHED = 0;
-    // IDLE = 1;
+    delay(10000);
+    CYCLE_FINISHED = 0;
+    IDLE = 1;
   }
 
 //  if (INTERRUPT == 1){
