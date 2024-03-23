@@ -14,8 +14,10 @@ bool START = 0;
 void setup() {
   initializeSensors();
   initializeButtons();
+  // initializeSensors();
+
   setupServos();
-  // attachInterrupt(digitalPinToInterrupt(BUTTON_STOP), estop, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_STOP), estop, CHANGE);
 }
 
 void loop() {  
@@ -27,6 +29,9 @@ void loop() {
   
   printLcd("Starting Test");
   delay(2000);
+  //heatOn();
+  printHumidity(readHumidity());
+  delay(10000);
 
   if (IDLE == 1 && INTERRUPT == 0) {
     while (!buttonPressed(BUTTON_START) && INTERRUPT == 0){}
@@ -42,7 +47,7 @@ void loop() {
     // Serial.println("Start button pushed. Beginning heating cycle...");
     delay(1000);    
     // assume start button pressed only after lid is closed
-    Lock();
+    // Lock();
     IDLE = 0; 
     PREHEAT = 1;
   }
@@ -53,19 +58,17 @@ void loop() {
     printLcd("begin heating");
 
     while (AT_TEMP != 1 && INTERRUPT == 0) {
-      // double temp = readTemp();
-      // if (temp > 140) {
-      //   PREHEAT = 0;
-      //   AT_TEMP = 1;
-      // }
-      printHumidity(readHumidity());
-      //delay(3000);
-      //printAir(readAir());
-      delay(10000);    // check temp frequency (10s)
-      AT_TEMP = 1;
-      printLcd("reached temp");
-      delay(4000);
       printTemp(readTemp());
+      delay(500);
+      double temp = readTemp();
+      if (temp > 45.0) { // expected to be ~25 minutes
+        printLcd("reached temp");
+        PREHEAT = 0;
+        AT_TEMP = 1;
+      }
+      else {
+        delay(10000); // check temp every 10s
+      }
     }
   }
 
@@ -76,7 +79,7 @@ void loop() {
     unsigned long elapsed = 0;
     unsigned long CurrentTime = 0;
 
-    double minute = 80;
+    double minute = 480-120;
     double ms_in_min = 60000;
     double delay_duration = minute * ms_in_min;
     // delay(delay_duration);
@@ -84,11 +87,12 @@ void loop() {
     printLcd("Drying...");
 
     while (elapsed < delay_duration && INTERRUPT == 0) {
-      Blend(10); // blend for 5 seconds
-      printTempTime(readTemp(), readHumidity(), elapsed);
+      //Blend(10); // blend for 10 seconds
+      printTempTime(readTemp(), 0.0, elapsed);
       delay(10000);
       printLcd("Drying...");
-      delay(10000);
+      delay(2000);
+      //printAir(readAir());
       CurrentTime = millis();
       elapsed = CurrentTime - StartTime;
       
@@ -111,11 +115,11 @@ void loop() {
       printTemp(temp);
 //      delay(30000);   // wait 30s until next check
       if (temp > 45.00) {
-        delay(10000);   // wait 30s until next check
+        delay(30000);   // wait 30s until next check
         // (reduce check time from every 10 minutes -> 5 minutes -> 30 seconds -> 5 seconds)
        }
       else if (45.00 > temp && temp > 35.00) {
-        delay(5000);
+        delay(10000);
       }
       else if (temp < 35.00) { 
         COOLING = 0; 
@@ -137,9 +141,10 @@ void loop() {
     // 1. print lcd about cycle finished etc.
     // 2. turn off after 2 minutes
     // 3. locking servo unlocks lid
-    Unlock();
+    // Unlock();
     delay(5000);
-    printLcd("please open lid");
+    printLcd("Please open lid");
+    delay(10000);
     CYCLE_FINISHED = 0;
     IDLE = 1;
   }

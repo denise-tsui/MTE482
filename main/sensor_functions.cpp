@@ -50,17 +50,20 @@ void initializeSensors() {
 
   if (!htu.begin()) {
     Serial.println("Humidity not found");
-    while (1);
-  }
+    //while (1);
+  } 
+
   if (!sgp.begin()){
     Serial.println("Air quality not found");
-    while (1);
-  }
+    //while (1);
+  } 
 
  if (!tempsensor.begin(0x18)) {
    Serial.println("Temp not found");
-   while (1);
- }
+   //while (1);
+ } 
+
+
  tempsensor.setResolution(3); // set resolution of temp sensor
   // Mode Resolution SampleTime
   //  0    0.5°C       30 ms
@@ -68,11 +71,16 @@ void initializeSensors() {
   //  2    0.125°C     130 ms
   //  3    0.0625°C    250 ms
 
+  Serial.println("Trying to initialize LCD");
   lcd.begin(16,2);
-  lcd.clear();
+  Serial.println("LCD begin called");
+  //lcd.clear();
+  Serial.println("All sensors initialized..");
+
 }
 
 void initializeButtons(){
+  //Serial.begin(9600);
   pinMode(BUTTON_START, INPUT);
   pinMode(BUTTON_STOP, INPUT);
   pinMode(LED_START, OUTPUT);
@@ -83,9 +91,12 @@ void initializeButtons(){
   digitalWrite(LED_IDLE, 1); // idle led indicates device is on and not running
   digitalWrite(LED_START, 0);
   digitalWrite(LED_STOP, 0);
+  // Serial.println("LEDs connected");
 
   // heating pin for relay
   pinMode(HEAT_PIN, OUTPUT);
+
+  // Serial.println("Heating connected");
 
 }
 
@@ -159,11 +170,20 @@ void printLcd(String message){
 }
 
 void printTempTime(float temp, float humd, double elapsed){
- lcd.clear();
- lcd.setCursor(0, 0);
- lcd.print("T:" + String(temp) + " H:" + String(humd));
- lcd.setCursor(0, 1);
- lcd.print("Time: " + String(elapsed/60000) + " mins");
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Temp (C): " + String(temp));
+  lcd.setCursor(0, 1);
+
+  long totalSeconds = long(elapsed) / 1000;
+
+  // Calculate hours, minutes, and remaining seconds
+  int hours = totalSeconds / 3600;
+  int remainingSeconds = totalSeconds % 3600;
+  int minutes = remainingSeconds / 60;
+  int seconds = remainingSeconds % 60;
+
+  lcd.print("Time: " + String(hours) + ":" + String(minutes) + ":" + String(seconds));
 }
 
 /**  PTC HEATING FUNCTIONS  **/
@@ -179,9 +199,10 @@ void heatOff(){
 
 /**  SERVO FUNCTIONS  **/
 void setupServos(){
+  Serial.begin(9600);
   servo_lock.attach(SERVO_PIN);
   servo_lock.write(180);
-  // Serial.println("Initialize Servo in Unlocked Position");
+  Serial.println("Initialize Servo in Unlocked Position");
   // delay(15);
   servo_blend.attach(BLEND_PIN);
   servo_blend.write(90);    // blending servo is stationary
