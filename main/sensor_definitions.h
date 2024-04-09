@@ -26,6 +26,7 @@ void initializeButtons();
 // reading
 float readHumidity();
 float readAir();
+float readAir2();
 float readTemp();
 
 // printing

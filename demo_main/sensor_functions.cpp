@@ -52,7 +52,7 @@ void initializeSensors() {
 
   if (!htu.begin()) {
     Serial.println("Humidity not found");
-    while (1);
+    // while (1);
   }
   if (!sgp.begin()){
     Serial.println("Air quality not found");
@@ -231,7 +231,7 @@ void setupServos(){
 void Lock(){
   Serial.println("Locking..");
   delay(15);
-  servo_lock.write(180-75);
+  servo_lock.write(80);
 }
 
 void Unlock(){

@@ -27,11 +27,14 @@ void loop() {
     delay(10000);
   }
   
-  printLcd("Starting Test");
-  delay(2000);
-  //heatOn();
-  printHumidity(readHumidity());
-  delay(10000);
+  printLcd("Testing Ready?");
+  delay(3000);
+  // printHumidity(readHumidity());
+  // delay(5000);
+  printAir(readAir());
+  delay(5000);
+  printLcd("Testing Ready?");
+  delay(100);
 
   if (IDLE == 1 && INTERRUPT == 0) {
     while (!buttonPressed(BUTTON_START) && INTERRUPT == 0){}
@@ -79,23 +82,23 @@ void loop() {
     unsigned long elapsed = 0;
     unsigned long CurrentTime = 0;
 
-    double minute = 480-120;
+    double minute = 480;
     double ms_in_min = 60000;
     double delay_duration = minute * ms_in_min;
-    // delay(delay_duration);
 
     printLcd("Drying...");
 
     while (elapsed < delay_duration && INTERRUPT == 0) {
-      //Blend(10); // blend for 10 seconds
+      // Blend(10); // blend for 10 seconds
+      // printTempTime(readTemp(), readHumidity(), elapsed);
       printTempTime(readTemp(), 0.0, elapsed);
       delay(10000);
       printLcd("Drying...");
       delay(2000);
-      //printAir(readAir());
+      printAir(readAir2());
+      delay(6000);
       CurrentTime = millis();
       elapsed = CurrentTime - StartTime;
-      
     }
 
     printLcd("Heating done!");
@@ -132,10 +135,12 @@ void loop() {
     printLcd("cycle finished");
     delay(10000);
     printLcd("quality summary:");
-    printAir(readAir());
-    delay(5000);
-    printHumidity(readHumidity());
-    delay(5000);
+    printAir(readAir2());
+    delay(7000);
+    // printHumidity(readHumidity());
+    // delay(7000);
+
+    
 
     
     // 1. print lcd about cycle finished etc.

@@ -140,6 +140,24 @@ float readAir(){
   return max(non_zero_air, air);
 }
 
+float readAir2(){
+  if (! sgp.IAQmeasure()) {
+    Serial.println("Measurement failed");
+    return -1;
+  }
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Reading air");
+  lcd.setCursor(0, 1); // bottom left
+  lcd.print("quality value...");
+  delay(2000);
+
+  float air = sgp.TVOC;
+  Serial.print("TVOC "); Serial.print(air); Serial.println(" ppb\t");
+
+  return air;
+}
+
 float readTemp(){
   tempsensor.wake();          // wake up mcp9808 for reading
   float c = tempsensor.readTempC();
@@ -172,7 +190,7 @@ void printLcd(String message){
 void printTempTime(float temp, float humd, double elapsed){
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Temp (C): " + String(temp));
+  lcd.print("T(C):" + String(temp) + " H:" + String(humd));
   lcd.setCursor(0, 1);
 
   long totalSeconds = long(elapsed) / 1000;
